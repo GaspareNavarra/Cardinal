@@ -1,6 +1,6 @@
 <template>
   <div id="main-page">
-    <template class="row">
+    <!-- <template class="row">
       <Card class="col-sm-12">
         <template #title>Simple Card</template>
         <template #content>
@@ -11,7 +11,7 @@
           </p>
         </template>
       </Card>
-    </template>
+    </template> -->
   </div>
 </template>
 <script>
