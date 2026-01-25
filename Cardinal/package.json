@@ -11,6 +11,8 @@
     "format": "prettier --write --experimental-cli src/"
   },
   "dependencies": {
+    "primeicons": "^7.0.0",
+    "primevue": "^4.5.4",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
   },

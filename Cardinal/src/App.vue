@@ -1,17 +1,13 @@
 <template>
   <div id="main-page">
-    <template class="row">
-      <Card class="col-sm-12">
+    <div class="card-wrapper">
+      <Card style="width: 25rem">
         <template #title>Simple Card</template>
         <template #content>
-          <p class="m-0">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur
-            error repudiandae numquam deserunt quisquam repellat libero asperiores earum nam nobis,
-            culpa ratione quam perferendis esse, cupiditate neque quas!
-          </p>
+          <p class="m-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
         </template>
       </Card>
-    </template>
+    </div>
   </div>
 </template>
 <script>
@@ -33,9 +29,31 @@ export default {
 * {
   color: black;
 }
+html,
+body,
+#app {
+  height: 100vh;
+  margin: 0;
+}
+/*-------------------------------------------------------------*/
 #main-page {
-  background: linear-gradient(90deg, rgba(42, 123, 155, 1) 0%, rgba(255, 0, 0, 1) 100%, rgba(237, 221, 83, 1) 100%);
-  width: 100%;
-  height: 100%;
+  position: relative;
+  min-height: 100vh;
+  background: url('/img/cardinal_background.png') center / cover no-repeat;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#main-page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+.card-wrapper {
+  position: relative;
+  z-index: 2;
 }
 </style>
