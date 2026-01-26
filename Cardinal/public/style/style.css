@@ -1,0 +1,72 @@
+/* Reset base per occupare tutto lo schermo */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+#main-page {
+  position: relative;
+  min-height: 100vh;
+  background: url('/img/cardinal_background.png') center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centra orizzontalmente il container */
+  overflow: hidden;
+}
+
+/* Overlay scuro */
+#main-page::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45); /* Leggermente più scuro per contrasto */
+  z-index: 1;
+}
+
+.container {
+  position: relative;
+  z-index: 2; /* Sopra l'overlay */
+}
+
+/* --- Animazione ZoomIn --- */
+@keyframes zoomIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.card-wrapper {
+  position: relative;
+  z-index: 2;
+  animation: zoomIn 1.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* --- Fix specifici per PrimeVue --- */
+
+/* Assicura che i componenti FloatLabel non taglino il testo */
+:deep(.p-floatlabel) {
+  display: block;
+}
+
+/* Toglie il padding extra in alto al titolo della Card se il logo è troppo grande */
+:deep(.p-card-title) {
+  margin-bottom: 0;
+  padding-top: 1rem;
+}
+
+/* Rende il testo del bottone leggibile */
+:deep(.p-button.p-button-contrast) {
+  font-weight: bold;
+}
+/* Da aggiungere allo stile della card se vuoi provare */
+.p-card {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px);
+}

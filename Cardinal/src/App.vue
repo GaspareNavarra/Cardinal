@@ -1,21 +1,14 @@
 <template>
   <div id="main-page">
-    <div class="card-wrapper">
-      <Card style="width: 25rem">
-        <template #title>Simple Card</template>
-        <template #content>
-          <p class="m-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
-        </template>
-      </Card>
+    <div class="container">
+      <div class="row justify-content-center">
+        <RouterView></RouterView>
+      </div>
     </div>
   </div>
 </template>
 <script>
-import Card from 'primevue/card'
 export default {
-  components: {
-    Card,
-  },
   provide() {
     return {}
   },
@@ -25,35 +18,44 @@ export default {
   methods: {},
 }
 </script>
-<style>
-* {
-  color: black;
+<style scoped>
+/* Applichiamo il trucco del gradiente alla variabile ufficiale di PrimeVue 4 */
+:deep(.p-floatlabel) {
+  --p-floatlabel-on-active-background: linear-gradient(
+    to bottom,
+    transparent 50%,
+    #ffffff 50% /* Usa il colore della tua card qui */
+  ) !important;
 }
-html,
-body,
-#app {
-  height: 100vh;
-  margin: 0;
-}
-/*-------------------------------------------------------------*/
-#main-page {
-  position: relative;
-  min-height: 100vh;
-  background: url('/img/cardinal_background.png') center / cover no-repeat;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* Assicuriamoci che la label abbia un po' di respiro ai lati per non far toccare la riga */
+:deep(.p-floatlabel label) {
+  padding: 0 6px !important;
+  /* Se la riga si vede ancora, regola la percentuale del gradiente (es. 48% invece di 50%) */
+  background: var(--p-floatlabel-on-active-background) !important;
 }
-#main-page::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.35);
-  z-index: 1;
+
+/* Fix specifico per il componente Password che spesso ignora le classi esterne */
+:deep(.p-password input) {
+  width: 100%;
 }
+
+/* 1. Solleva la card rispetto allo schermo */
 .card-wrapper {
-  position: relative;
-  z-index: 2;
+  /* Invece di essere perfettamente al centro, la alziamo di un 5% */
+  transform: translateY(-5%) !important;
+  /* Nota: Se hai già l'animazione zoomIn, 
+       aggiungi il translateY( -5%) nel 100% dell'animazione */
+}
+
+/* 2. Recupera spazio dentro la card */
+:deep(.p-card-title) {
+  margin-top: -10px !important; /* Porta il logo più vicino al bordo superiore */
+  margin-bottom: 20px !important; /* Spazio tra logo e Username */
+}
+
+/* 3. Aumenta il respiro sotto il bottone */
+:deep(.p-card-content) {
+  padding-bottom: 1.5rem !important;
 }
 </style>

@@ -4,14 +4,13 @@ import Login from '@/components/Login.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {path: '/', redirect: '/login'},
-    {path: '/Login', component: Login},
+    { path: '/', redirect: '/login' },
+    { path: '/login', component: Login },
     // { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
   ],
 })
 
 export default router
-
 
 // import { createRouter, createWebHistory } from "vue-router";
 // import HomePage from './components/pages/HomePage.vue';
