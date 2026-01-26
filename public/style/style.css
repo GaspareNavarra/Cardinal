@@ -1,4 +1,3 @@
-/* Reset base per occupare tutto lo schermo */
 html,
 body {
   margin: 0;
@@ -12,7 +11,7 @@ body {
   background: url('/img/cardinal_background.png') center / cover no-repeat;
   display: flex;
   align-items: center;
-  justify-content: center; /* Centra orizzontalmente il container */
+  justify-content: center;
   overflow: hidden;
 }
 
@@ -21,13 +20,13 @@ body {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45); /* Leggermente più scuro per contrasto */
+  background: rgba(0, 0, 0, 0.45);
   z-index: 1;
 }
 
 .container {
   position: relative;
-  z-index: 2; /* Sopra l'overlay */
+  z-index: 2;
 }
 
 /* --- Animazione ZoomIn --- */
@@ -50,23 +49,33 @@ body {
 
 /* --- Fix specifici per PrimeVue --- */
 
-/* Assicura che i componenti FloatLabel non taglino il testo */
 :deep(.p-floatlabel) {
   display: block;
 }
 
-/* Toglie il padding extra in alto al titolo della Card se il logo è troppo grande */
 :deep(.p-card-title) {
   margin-bottom: 0;
   padding-top: 1rem;
 }
 
-/* Rende il testo del bottone leggibile */
 :deep(.p-button.p-button-contrast) {
   font-weight: bold;
 }
-/* Da aggiungere allo stile della card se vuoi provare */
 .p-card {
   background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(10px);
+}
+
+/* -------------------------------Loading------------------------------- */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
