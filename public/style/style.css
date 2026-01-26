@@ -47,7 +47,7 @@ body {
   animation: zoomIn 1.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
-/* --- Fix specifici per PrimeVue --- */
+/* ------------------------------- Fix specifici per PrimeVue ------------------------------- */
 
 :deep(.p-floatlabel) {
   display: block;
@@ -78,4 +78,37 @@ body {
   justify-content: center;
   align-items: center;
   z-index: 9999;
+}
+
+/* -------------------------------Toast------------------------------- */
+/* Sovrascrittura globale per il Toast Error */
+.p-toast .p-toast-message-error {
+  background: rgba(180, 20, 20, 0.6) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
+.p-toast .p-toast-message-error .p-toast-message-content .p-toast-summary,
+.p-toast .p-toast-message-error .p-toast-message-content .p-toast-detail,
+.p-toast .p-toast-message-error .p-toast-message-icon,
+.p-toast .p-toast-message-error .p-toast-icon-close {
+  color: #ffffff !important;
+}
+
+/* Sovrascrittura globale per il Toast Success */
+.p-toast .p-toast-message-success {
+  background: rgba(20, 140, 20, 0.6) !important; /* Verde foresta trasparente */
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4) !important;
+}
+
+.p-toast .p-toast-message-success .p-toast-message-content .p-toast-summary,
+.p-toast .p-toast-message-success .p-toast-message-content .p-toast-detail,
+.p-toast .p-toast-message-success .p-toast-message-icon,
+.p-toast .p-toast-message-success .p-toast-icon-close {
+  color: #ffffff !important;
 }

@@ -1,5 +1,6 @@
 <template>
   <div id="main-page">
+    <Toast />
     <div class="container">
       <div class="row justify-content-center">
         <div class="loading" v-show="isLoading">
@@ -12,17 +13,37 @@
 </template>
 <script>
 import ProgressSpinner from 'primevue/progressspinner'
+import Toast from 'primevue/toast'
 export default {
-  components: { ProgressSpinner },
+  components: { ProgressSpinner, Toast },
   provide() {
-    return {}
+    return {
+      setIsLoading: this.setIsLoading,
+      setUserStatus: this.setUserStatus,
+      getUserStatus: this.getUserStatus,
+      showToast: this.showToast,
+    }
   },
   data() {
     return {
       isLoading: false,
+      userIsLogged: false,
     }
   },
-  methods: {},
+  methods: {
+    setIsLoading(value) {
+      this.isLoading = value
+    },
+    setUserStatus(isLogged) {
+      this.userIsLogged = isLogged
+    },
+    getUserStatus() {
+      return this.userIsLogged
+    },
+    showToast(params) {
+      this.$toast.add(params)
+    },
+  },
   beforeMount() {
     this.isLoading = true
   },
@@ -31,34 +52,3 @@ export default {
   },
 }
 </script>
-<style scoped>
-:deep(.p-floatlabel) {
-  --p-floatlabel-on-active-background: linear-gradient(
-    to bottom,
-    transparent 50%,
-    #ffffff 50%
-  ) !important;
-}
-
-:deep(.p-floatlabel label) {
-  padding: 0 6px !important;
-  background: var(--p-floatlabel-on-active-background) !important;
-}
-
-:deep(.p-password input) {
-  width: 100%;
-}
-
-.card-wrapper {
-  transform: translateY(-5%) !important;
-}
-
-:deep(.p-card-title) {
-  margin-top: -10px !important;
-  margin-bottom: 20px !important;
-}
-
-:deep(.p-card-content) {
-  padding-bottom: 1.5rem !important;
-}
-</style>

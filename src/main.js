@@ -6,6 +6,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import '../public/style/style.css'
 import { definePreset } from '@primeuix/themes'
 import router from './router/router'
+import ToastService from 'primevue/toastservice'
 
 const app = createApp(App)
 
@@ -42,5 +43,6 @@ app.use(PrimeVue, {
   },
 })
 
+app.use(ToastService)
 app.use(router)
 app.mount('#app')
