@@ -7,6 +7,7 @@ import '../public/style/style.css'
 import { definePreset } from '@primeuix/themes'
 import router from './router/router'
 import ToastService from 'primevue/toastservice'
+import 'primeicons/primeicons.css'
 
 const app = createApp(App)
 

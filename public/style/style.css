@@ -129,3 +129,56 @@ body {
 .p-toast .p-toast-message-success .p-toast-icon-close {
   color: #ffffff !important;
 }
+
+/* -------------------------------HomePage------------------------------- */
+/* Widget Statistiche */
+.stats-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 15px;
+  min-width: 150px;
+  transition: transform 0.3s;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  background: rgba(255, 204, 0, 0.05);
+  border-color: rgba(255, 204, 0, 0.3);
+}
+
+.stats-card .label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  display: block;
+}
+
+.stats-card .value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffcc00; /* Giallo Cardinal */
+}
+
+/* Barra di Ricerca */
+.search-input {
+  background: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(255, 204, 0, 0.2) !important;
+  color: white !important;
+  padding: 1rem 1rem 1rem 3rem !important; /* Spazio per l'icona */
+}
+
+.search-input:focus {
+  border-color: #ffcc00 !important;
+  box-shadow: 0 0 10px rgba(255, 204, 0, 0.2) !important;
+}
+
+.pi-search-plus {
+  color: #ffcc00 !important;
+  left: 1rem !important;
+}
+
+.gallery-placeholder {
+  height: 300px;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
