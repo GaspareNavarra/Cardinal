@@ -48,24 +48,41 @@ body {
 }
 
 /* ------------------------------- Fix specifici per PrimeVue ------------------------------- */
-
-:deep(.p-floatlabel) {
-  display: block;
+.p-card {
+  /* Fondo scuro trasparente per l'effetto "Vetro Cyberpunk" */
+  background: rgba(15, 15, 15, 0.65) !important;
+  backdrop-filter: blur(15px) !important;
+  -webkit-backdrop-filter: blur(15px) !important; /* Fix per Mobile */
+  border: 1px solid rgba(255, 204, 0, 0.2) !important; /* Bordo sottile Giallo Cardinal */
+  border-radius: 16px !important;
+  color: #ffffff !important;
 }
 
-:deep(.p-card-title) {
-  margin-bottom: 0;
-  padding-top: 1rem;
+/* --- Input Field Fix --- */
+/* Rendiamo i campi input coerenti con la card scura */
+.p-inputtext {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
 }
 
-:deep(.p-button.p-button-contrast) {
+.p-inputtext:focus {
+  border-color: rgba(255, 204, 0, 0.6) !important; /* Giallo al focus */
+}
+
+/* --- Button Fix --- */
+.p-button.p-button-contrast {
+  background: #ffcc00 !important; /* Giallo Cardinal dello sfondo */
+  border-color: #ffcc00 !important;
+  color: #000000 !important; /* Testo nero per contrasto */
   font-weight: bold;
 }
-.p-card {
-  background: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(10px);
-}
 
+.p-button.p-button-contrast:enabled:hover {
+  background: #e6b800 !important;
+  transform: translateY(-2px);
+  transition: all 0.2s;
+}
 /* -------------------------------Loading------------------------------- */
 .loading {
   position: fixed;

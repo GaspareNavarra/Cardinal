@@ -1,5 +1,5 @@
 <template>
-  <div class="col-11 col-sm-8 col-md-6 col-lg-4 card-wrapper">
+  <div class="col-12 col-sm-10 col-md-6 col-lg-4 card-wrapper">
     <Card class="p-4 shadow-xl">
       <template #title>
         <img
@@ -105,17 +105,22 @@ export default {
 }
 </script>
 <style scoped>
+/* Adattamento FloatLabel per fondo scuro */
 :deep(.p-floatlabel) {
-  --p-floatlabel-on-active-background: linear-gradient(
-    to bottom,
-    transparent 50%,
-    #ffffff 50%
-  ) !important;
+  /* Rimuoviamo il gradiente bianco, usiamo la trasparenza o il colore della card */
+  --p-floatlabel-on-active-background: transparent !important;
 }
 
 :deep(.p-floatlabel label) {
   padding: 0 6px !important;
-  background: var(--p-floatlabel-on-active-background) !important;
+  background: rgba(20, 20, 20, 0.8) !important; /* Un piccolo sfondo per la label quando sale */
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Colore label quando è attiva */
+:deep(.p-floatlabel input:focus ~ label),
+:deep(.p-floatlabel input.p-filled ~ label) {
+  color: #ffcc00 !important; /* Giallo Cardinal */
 }
 
 :deep(.p-password input) {
@@ -123,7 +128,8 @@ export default {
 }
 
 .card-wrapper {
-  transform: translateY(-5%) !important;
+  /* Tolto il transform rigido per far lavorare meglio l'animazione zoomIn */
+  margin-top: -5vh;
 }
 
 :deep(.p-card-title) {
