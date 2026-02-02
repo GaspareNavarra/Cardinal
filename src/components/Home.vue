@@ -29,34 +29,17 @@
           <div class="row mb-4 gap-3 justify-content-between">
             <div class="col stats-card">
               <span class="label">Volumi Totali</span>
-              <div class="value">735</div>
+              <div class="value">{{ totalVolumes }}</div>
             </div>
             <div class="col stats-card">
               <span class="label">In Lettura</span>
-              <div class="value">12</div>
+              <div class="value">{{ reading }}</div>
             </div>
             <div class="col stats-card highlight">
               <span class="label">In Arrivo</span>
-              <div class="value">3</div>
+              <div class="value">{{ arriving }}</div>
             </div>
           </div>
-
-          <!-- <div class="gallery-placeholder d-flex align-items-center justify-content-center">
-            <p class="text-muted" v-if="!searchResults.length > 0">
-              La tua collezione apparirà qui...
-            </p>
-            <div class="manga-gallery mt-4" v-if="searchResults.length > 0">
-              <div class="row g-4">
-                <div
-                  v-for="item in searchResults"
-                  :key="item.mal_id"
-                  class="col-6 col-sm-4 col-md-3 col-xl-2"
-                >
-                  <MangaCard :manga="item" @add="saveToDatabase()" />
-                </div>
-              </div>
-            </div>
-          </div> -->
 
           <div
             :class="[
@@ -108,18 +91,20 @@ export default {
       username: '',
       isSearching: false,
       searchResults: [],
+      userId: '',
+      totalVolumes: 0,
+      reading: 0,
+      arriving: 0,
     }
   },
   watch: {
     newMangaSearch(newValue) {
-      // 1. Se l'input è vuoto o ha meno di 4 caratteri, svuota tutto
       if (!newValue || newValue.trim().length < 4) {
         this.searchResults = []
         this.isSearching = false
         return
       }
 
-      // 2. Fai partire la ricerca (rimuoviamo il blocco isSearching per permettere al debounce di aggiornarsi)
       this.debouncedSearch(newValue)
     },
   },
@@ -127,10 +112,12 @@ export default {
     saveToDatabase() {},
   },
   beforeMount() {
-    if (!this.getUserStatus() || !localStorage.getItem('username')) {
+    if (!this.getUserStatus() || !localStorage.getItem('user')) {
       this.$router.push('/')
     }
-    this.username = localStorage.getItem('username')
+    const user = JSON.parse(localStorage.getItem('user'))
+    this.username = user.username
+    this.userId = user.user_id
   },
   mounted() {
     // Facciamo partire l'animazione dopo un micro-ritardo dall'atterraggio
@@ -202,5 +189,53 @@ export default {
     opacity: 1;
     transform: translateY(0);
   }
+}
+/* Forza il corpo della card a occupare lo spazio verticale */
+:deep(.p-card-body) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+:deep(.p-card-content) {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0; /* Permette al figlio di non "esplodere" fuori dal padre */
+}
+
+.fade-in-content {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-height: 0;
+}
+
+/* IL FIX: Gestione corretta della galleria */
+.results-container {
+  width: 100%;
+  flex-grow: 1;
+  min-height: 0;
+  overflow-y: auto; /* Attiva lo scroll verticale */
+  overflow-x: hidden; /* Evita scroll orizzontali fastidiosi */
+  margin-top: 20px;
+  padding: 10px;
+}
+
+/* Quando ci sono i risultati, assicuriamoci che la galleria 
+   non forzi le card a rimpicciolirsi */
+.manga-gallery {
+  height: auto;
+  min-height: min-content;
+}
+
+/* Stile per il placeholder vuoto - rimane Full Height e centrato */
+.results-container.is-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  flex-grow: 1;
 }
 </style>

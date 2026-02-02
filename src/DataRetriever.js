@@ -5,7 +5,7 @@ export async function searchManga(manga_name) {
 
   try {
     const response = await axios.get(`https://api.jikan.moe/v4/manga`, {
-      params: { q: manga_name, limit: 5 },
+      params: { q: manga_name, limit: 24 },
     })
     return response.data.data
   } catch (error) {
