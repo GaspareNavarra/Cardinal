@@ -6,7 +6,7 @@
           <img src="/img/cardinal_logo_with_text.png" style="height: 40px" alt="Logo" />
           <div class="user-info d-flex align-items-center gap-2">
             <span class="pi pi-user"></span>
-            <span class="text-sm"> Ciao, Fratomo</span>
+            <span class="text-sm"> Ciao, {{ username }}</span>
             <i class="pi pi-user-circle" style="font-size: 1.5rem"></i>
           </div>
         </div>
@@ -16,16 +16,14 @@
         <div v-if="expanded" class="fade-in-content container-fluid">
           <div class="search-section my-4">
             <IconField class="w-100">
-              <InputIcon class="pi pi-search-plus" />
+              <InputIcon :class="isSearching ? 'pi pi-spin pi-spinner' : 'pi pi-search-plus'" />
               <InputText
                 v-model="newMangaSearch"
-                placeholder="Cerca un nuovo manga da aggiungere alla tua libreria..."
+                placeholder="Cerca un nuovo manga..."
                 class="w-100 search-input"
               />
             </IconField>
-            <small class="text-muted mt-2 d-block"
-              >Scrivi il titolo e premi invio per cercare nel database globale</small
-            >
+            <small class="text-muted mt-2 d-block">Scrivi il titolo da cercare</small>
           </div>
 
           <div class="row mb-4 gap-3 justify-content-between">
@@ -43,8 +41,44 @@
             </div>
           </div>
 
-          <div class="gallery-placeholder d-flex align-items-center justify-content-center">
-            <p class="text-muted">La tua collezione apparirà qui...</p>
+          <!-- <div class="gallery-placeholder d-flex align-items-center justify-content-center">
+            <p class="text-muted" v-if="!searchResults.length > 0">
+              La tua collezione apparirà qui...
+            </p>
+            <div class="manga-gallery mt-4" v-if="searchResults.length > 0">
+              <div class="row g-4">
+                <div
+                  v-for="item in searchResults"
+                  :key="item.mal_id"
+                  class="col-6 col-sm-4 col-md-3 col-xl-2"
+                >
+                  <MangaCard :manga="item" @add="saveToDatabase()" />
+                </div>
+              </div>
+            </div>
+          </div> -->
+
+          <div
+            :class="[
+              'results-container',
+              { 'is-empty': !searchResults.length, 'has-results': searchResults.length },
+            ]"
+          >
+            <div v-if="!searchResults.length" class="empty-state">
+              <p class="text-muted">La tua collezione apparirà qui...</p>
+            </div>
+
+            <div v-else class="manga-gallery fade-in-content">
+              <div class="row g-4">
+                <div
+                  v-for="item in searchResults"
+                  :key="item.mal_id"
+                  class="col-6 col-sm-4 col-md-3 col-xl-2"
+                >
+                  <MangaCard :manga="item" @add="saveToDatabase(item)" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </template>
@@ -56,30 +90,75 @@ import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
+import MangaCard from '@/components/MangaCard.vue'
+import { debounce, searchManga } from '@/DataRetriever'
 export default {
   components: {
     Card,
     InputText,
     IconField,
     InputIcon,
+    MangaCard,
   },
   inject: ['getUserStatus'],
   data() {
     return {
       expanded: false,
       newMangaSearch: '',
+      username: '',
+      isSearching: false,
+      searchResults: [],
     }
   },
+  watch: {
+    newMangaSearch(newValue) {
+      // 1. Se l'input è vuoto o ha meno di 4 caratteri, svuota tutto
+      if (!newValue || newValue.trim().length < 4) {
+        this.searchResults = []
+        this.isSearching = false
+        return
+      }
+
+      // 2. Fai partire la ricerca (rimuoviamo il blocco isSearching per permettere al debounce di aggiornarsi)
+      this.debouncedSearch(newValue)
+    },
+  },
+  methods: {
+    saveToDatabase() {},
+  },
   beforeMount() {
-    if (!this.getUserStatus()) {
+    if (!this.getUserStatus() || !localStorage.getItem('username')) {
       this.$router.push('/')
     }
+    this.username = localStorage.getItem('username')
   },
   mounted() {
     // Facciamo partire l'animazione dopo un micro-ritardo dall'atterraggio
     setTimeout(() => {
       this.expanded = true
     }, 100)
+  },
+  created() {
+    this.debouncedSearch = debounce(async (query) => {
+      // Controllo preventivo: se nel tempo del debounce l'utente ha cancellato, non fare nulla
+      if (this.newMangaSearch.length < 4) return
+
+      this.isSearching = true
+      try {
+        const results = await searchManga(query)
+
+        // Controllo post-chiamata: assegna i risultati solo se l'input è ancora valido
+        if (this.newMangaSearch.length >= 4) {
+          this.searchResults = results
+        } else {
+          this.searchResults = []
+        }
+      } catch (error) {
+        console.error('Errore ricerca:', error)
+      } finally {
+        this.isSearching = false
+      }
+    }, 500)
   },
 }
 </script>

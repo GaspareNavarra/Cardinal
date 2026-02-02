@@ -81,6 +81,7 @@ export default {
       try {
         const response = await axios.post(endpoints.BASE_URL + endpoints.AUTH.LOGIN, params)
         localStorage.setItem('token', response.data.authToken)
+        localStorage.setItem('username', response.data.username)
         this.showToast({
           severity: 'success',
           summary: 'Login effettuato',

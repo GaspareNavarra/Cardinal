@@ -172,7 +172,8 @@ body {
   box-shadow: 0 0 10px rgba(255, 204, 0, 0.2) !important;
 }
 
-.pi-search-plus {
+.pi-search-plus,
+.pi-spinner {
   color: #ffcc00 !important;
   left: 1rem !important;
 }
@@ -181,4 +182,39 @@ body {
   height: 300px;
   border: 2px dashed rgba(255, 255, 255, 0.1);
   border-radius: 20px;
+}
+
+/* Contenitore flessibile */
+.results-container {
+  width: 100%;
+  min-height: 300px;
+  max-height: 60vh; /* Limita l'altezza per non rompere la card principale */
+  overflow-y: auto;
+  transition: all 0.4s ease;
+  padding: 10px;
+  margin-top: 20px;
+}
+
+/* Stile quando è VUOTO (Bordo tratteggiato) */
+.results-container.is-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+}
+
+/* Stile quando ha RISULTATI (Pulito) */
+.results-container.has-results {
+  border: none;
+  background: transparent;
+}
+
+/* Scrollbar personalizzata per la galleria */
+.results-container::-webkit-scrollbar {
+  width: 6px;
+}
+.results-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 204, 0, 0.3);
+  border-radius: 10px;
 }

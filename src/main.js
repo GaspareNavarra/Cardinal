@@ -8,6 +8,7 @@ import { definePreset } from '@primeuix/themes'
 import router from './router/router'
 import ToastService from 'primevue/toastservice'
 import 'primeicons/primeicons.css'
+import Tooltip from 'primevue/tooltip'
 
 const app = createApp(App)
 
@@ -46,4 +47,5 @@ app.use(PrimeVue, {
 
 app.use(ToastService)
 app.use(router)
+app.directive('tooltip', Tooltip)
 app.mount('#app')
