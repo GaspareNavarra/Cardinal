@@ -218,3 +218,69 @@ body {
   background: rgba(255, 204, 0, 0.3);
   border-radius: 10px;
 }
+.filter-popover.p-popover {
+  background: rgba(15, 15, 15, 0.9) !important;
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 204, 0, 0.3) !important;
+  color: white !important;
+}
+
+.filter-icon:hover {
+  color: #ffcc00 !important;
+  transform: scale(1.2);
+  transition: all 0.2s;
+}
+
+/* Stile per i bottoni di selezione filtri */
+.p-selectbutton .p-button {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+  font-size: 0.8rem;
+}
+
+.p-selectbutton .p-button.p-highlight {
+  background: rgba(255, 204, 0, 0.2) !important;
+  border-color: #ffcc00 !important;
+  color: #ffcc00 !important;
+}
+.filter-popover label {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.p-selectbutton .p-togglebutton {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.p-togglebutton:not(:disabled):not(.p-togglebutton-checked):hover {
+  background: rgba(255, 204, 0, 0.3) !important;
+  color: white !important;
+}
+.p-selectbutton .p-togglebutton {
+  border-color: rgba(255, 204, 0, 0.3) !important;
+}
+.p-togglebutton.p-togglebutton-checked {
+  /* background: rgba(0, 0, 0, 0.2) !important; */
+  background: rgb(26 23 0) !important;
+  color: #ffcc00 !important;
+  font-weight: bold !important;
+}
+.p-togglebutton-checked .p-togglebutton-content {
+  background: #1a1700 !important;
+}
+.p-button-text.p-button-secondary {
+  background: #ffcc00 !important;
+  border-color: #ffcc00 !important;
+  color: #000000 !important;
+  font-weight: bold;
+}
+.p-button-text.p-button-secondary:not(:disabled):hover {
+  background: #e6b800 !important;
+  transform: translateY(-2px);
+  transition: all 0.2s;
+}
+
+.hello-message {
+  color: #ffcc00 !important;
+}
