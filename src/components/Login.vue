@@ -10,8 +10,8 @@
       </template>
       <template #content>
         <FloatLabel variant="on" class="w-100 mb-4">
-          <InputText id="username" v-model="username" class="w-100" />
-          <label for="username">Username</label>
+          <InputText id="email" v-model="email" class="w-100" />
+          <label for="email">email</label>
         </FloatLabel>
 
         <FloatLabel variant="on" class="w-100 mb-4">
@@ -22,7 +22,7 @@
             toggle-mask
             class="w-100"
             inputClass="w-100"
-            @keyup.enter="Login()"
+            @keyup.enter="doLogin()"
           />
           <label for="password">Password</label>
         </FloatLabel>
@@ -59,7 +59,7 @@ export default {
   inject: ['setIsLoading', 'setUserStatus', 'showToast'],
   data() {
     return {
-      username: '',
+      email: '',
       password: '',
     }
   },
@@ -68,13 +68,13 @@ export default {
       this.$router.push(path)
     },
     enableLoginButton() {
-      if (this.username == '' || this.password == '') return false
+      if (this.email == '' || this.password == '') return false
       return true
     },
     async Login() {
       this.setIsLoading(true)
       const params = {
-        username: this.username,
+        email: this.email,
         password: this.password,
       }
 
@@ -84,7 +84,7 @@ export default {
         localStorage.setItem(
           'user',
           JSON.stringify({
-            username: response.data.username,
+            email: response.data.email,
             id: response.data.user_id,
           }),
         )
@@ -101,13 +101,53 @@ export default {
         this.showToast({
           severity: 'error',
           summary: 'Errore Login',
-          detail: 'Username o Password non validi',
+          detail: 'email o Password non validi',
           life: 4000,
         })
         this.setUserStatus(false)
       }
       this.setIsLoading(false)
     },
+    async doLogin() {
+      this.setIsLoading(true)
+      const params = {
+        email: this.email,
+        password: this.password,
+      }
+
+      const { data, error } = await this.$supabase.auth.signInWithPassword(params)
+
+      if (error) {
+        console.log(error)
+        this.showToast({
+          severity: 'error',
+          summary: 'Errore Login',
+          detail: 'email o Password non validi',
+          life: 4000,
+        })
+        this.setUserStatus(false)
+      }
+
+      localStorage.setItem('token', data.session.access_token)
+      localStorage.setItem(
+        'user',
+        JSON.stringify({
+          email: data.user.email,
+          id: data.user.id,
+        }),
+      )
+      this.showToast({
+        severity: 'success',
+        summary: 'Login effettuato',
+        detail: 'Benvenuto in Cardinal',
+        life: 4000,
+      })
+      this.setUserStatus(true)
+      this.$router.push('/home')
+
+      this.setIsLoading(false)
+    },
+    async logout() {},
   },
 }
 </script>

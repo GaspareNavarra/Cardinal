@@ -4,10 +4,11 @@
       <template #title>
         <div class="d-flex justify-content-between align-items-center header-content">
           <img src="/img/cardinal_logo_with_text.png" style="height: 40px" alt="Logo" />
-          <div class="user-info d-flex align-items-center gap-2 hello-message">
-            <span class="pi pi-user"></span>
-            <span class="text-sm"> Ciao, {{ username }}</span>
-            <i class="pi pi-user-circle" style="font-size: 1.5rem"></i>
+          <div class="hello-message d-flex justify-content-end w-100">
+            <div class="logount-container" @click="doLogout">
+              <span class="logout-label">Logout</span>
+              <span class="pi pi-sign-out"></span>
+            </div>
           </div>
         </div>
       </template>

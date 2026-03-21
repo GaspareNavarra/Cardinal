@@ -9,8 +9,11 @@ import router from './router/router'
 import ToastService from 'primevue/toastservice'
 import 'primeicons/primeicons.css'
 import Tooltip from 'primevue/tooltip'
+import { supabase } from './lib/supabaseClient'
 
 const app = createApp(App)
+
+app.config.globalProperties.$supabase = supabase
 
 // 1. Definiamo il nuovo Preset basato su Aura
 const MyPreset = definePreset(Aura, {

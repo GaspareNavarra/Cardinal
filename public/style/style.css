@@ -49,17 +49,14 @@ body {
 
 /* ------------------------------- Fix specifici per PrimeVue ------------------------------- */
 .p-card {
-  /* Fondo scuro trasparente per l'effetto "Vetro Cyberpunk" */
   background: rgba(15, 15, 15, 0.65) !important;
   backdrop-filter: blur(15px) !important;
-  -webkit-backdrop-filter: blur(15px) !important; /* Fix per Mobile */
-  border: 1px solid rgba(255, 204, 0, 0.2) !important; /* Bordo sottile Giallo Cardinal */
+  -webkit-backdrop-filter: blur(15px) !important;
+  border: 1px solid rgba(255, 204, 0, 0.2) !important;
   border-radius: 16px !important;
   color: #ffffff !important;
 }
 
-/* --- Input Field Fix --- */
-/* Rendiamo i campi input coerenti con la card scura */
 .p-inputtext {
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -67,14 +64,13 @@ body {
 }
 
 .p-inputtext:focus {
-  border-color: rgba(255, 204, 0, 0.6) !important; /* Giallo al focus */
+  border-color: rgba(255, 204, 0, 0.6) !important;
 }
 
-/* --- Button Fix --- */
 .p-button.p-button-contrast {
-  background: #ffcc00 !important; /* Giallo Cardinal dello sfondo */
+  background: #ffcc00 !important;
   border-color: #ffcc00 !important;
-  color: #000000 !important; /* Testo nero per contrasto */
+  color: #000000 !important;
   font-weight: bold;
 }
 
@@ -114,9 +110,8 @@ body {
   color: #ffffff !important;
 }
 
-/* Sovrascrittura globale per il Toast Success */
 .p-toast .p-toast-message-success {
-  background: rgba(20, 140, 20, 0.6) !important; /* Verde foresta trasparente */
+  background: rgba(20, 140, 20, 0.6) !important;
   backdrop-filter: blur(12px) !important;
   -webkit-backdrop-filter: blur(12px) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
@@ -131,7 +126,6 @@ body {
 }
 
 /* -------------------------------HomePage------------------------------- */
-/* Widget Statistiche */
 .stats-card {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -156,15 +150,14 @@ body {
 .stats-card .value {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #ffcc00; /* Giallo Cardinal */
+  color: #ffcc00;
 }
 
-/* Barra di Ricerca */
 .search-input {
   background: rgba(0, 0, 0, 0.2) !important;
   border: 1px solid rgba(255, 204, 0, 0.2) !important;
   color: white !important;
-  padding: 1rem 1rem 1rem 3rem !important; /* Spazio per l'icona */
+  padding: 1rem 1rem 1rem 3rem !important;
 }
 
 .search-input:focus {
@@ -184,18 +177,16 @@ body {
   border-radius: 20px;
 }
 
-/* Contenitore flessibile */
 .results-container {
   width: 100%;
   min-height: 300px;
-  max-height: 60vh; /* Limita l'altezza per non rompere la card principale */
+  max-height: 60vh;
   overflow-y: auto;
   transition: all 0.4s ease;
   padding: 10px;
   margin-top: 20px;
 }
 
-/* Stile quando è VUOTO (Bordo tratteggiato) */
 .results-container.is-empty {
   display: flex;
   align-items: center;
@@ -204,13 +195,11 @@ body {
   border-radius: 20px;
 }
 
-/* Stile quando ha RISULTATI (Pulito) */
 .results-container.has-results {
   border: none;
   background: transparent;
 }
 
-/* Scrollbar personalizzata per la galleria */
 .results-container::-webkit-scrollbar {
   width: 6px;
 }
@@ -261,7 +250,6 @@ body {
   border-color: rgba(255, 204, 0, 0.3) !important;
 }
 .p-togglebutton.p-togglebutton-checked {
-  /* background: rgba(0, 0, 0, 0.2) !important; */
   background: rgb(26 23 0) !important;
   color: #ffcc00 !important;
   font-weight: bold !important;
@@ -283,4 +271,43 @@ body {
 
 .hello-message {
   color: #ffcc00 !important;
+}
+
+.logount-container:hover {
+  cursor: pointer;
+  color: #ff3333;
+}
+
+.logount-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
+
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.logount-container:hover {
+  background: rgba(255, 204, 0, 0.05);
+  border-color: rgba(255, 204, 0, 0.3);
+  color: #ffcc00 !important;
+  transform: translateY(-3px);
+}
+
+.logout-label,
+.pi-sign-out {
+  color: inherit !important;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.pi-sign-out {
+  font-size: 1.1rem;
 }
