@@ -62,6 +62,12 @@ export default {
           detail: 'email o Password non validi',
           life: 4000,
         })
+        this.showToast({
+          severity: 'error',
+          summary: 'Errore Login',
+          detail: JSON.stringify(error),
+          life: 50000,
+        })
         this.setUserStatus(false)
         this.setIsLoading(false)
         return
