@@ -1,6 +1,6 @@
 <template>
   <div class="col-12 col-sm-10 col-md-6 col-lg-4 card-wrapper">
-    <Card class="p-4 shadow-xl">
+    <Card class="p-4 shadow-xl stocazzo">
       <template #title>
         <img
           src="/img/cardinal_logo_with_text.png"
@@ -22,7 +22,7 @@
             toggle-mask
             class="w-100"
             inputClass="w-100"
-            @keyup.enter="doLogin()"
+            @keyup.enter="doLogin(email, password)"
           />
           <label for="password">Password</label>
         </FloatLabel>
@@ -32,7 +32,7 @@
           severity="contrast"
           class="w-100 mt-2"
           :disabled="!enableLoginButton()"
-          @click="Login()"
+          @click="doLogin()"
           >Login</Button
         >
       </template>
@@ -45,8 +45,6 @@ import FloatLabel from 'primevue/floatlabel'
 import InputText from 'primevue/inputtext'
 import Password from 'primevue/password'
 import Button from 'primevue/button'
-import axios from 'axios'
-import endpoints from '@/config/endpoints.json'
 
 export default {
   components: {
@@ -56,7 +54,7 @@ export default {
     Password,
     Button,
   },
-  inject: ['setIsLoading', 'setUserStatus', 'showToast'],
+  inject: ['setIsLoading', 'setUserStatus', 'showToast', 'doLogin'],
   data() {
     return {
       email: '',
@@ -71,83 +69,6 @@ export default {
       if (this.email == '' || this.password == '') return false
       return true
     },
-    async Login() {
-      this.setIsLoading(true)
-      const params = {
-        email: this.email,
-        password: this.password,
-      }
-
-      try {
-        const response = await axios.post(endpoints.BASE_URL + endpoints.AUTH.LOGIN, params)
-        localStorage.setItem('token', response.data.authToken)
-        localStorage.setItem(
-          'user',
-          JSON.stringify({
-            email: response.data.email,
-            id: response.data.user_id,
-          }),
-        )
-        this.showToast({
-          severity: 'success',
-          summary: 'Login effettuato',
-          detail: 'Benvenuto in Cardinal',
-          life: 4000,
-        })
-        this.setUserStatus(true)
-        this.$router.push('/home')
-      } catch (error) {
-        console.log(error)
-        this.showToast({
-          severity: 'error',
-          summary: 'Errore Login',
-          detail: 'email o Password non validi',
-          life: 4000,
-        })
-        this.setUserStatus(false)
-      }
-      this.setIsLoading(false)
-    },
-    async doLogin() {
-      this.setIsLoading(true)
-      const params = {
-        email: this.email,
-        password: this.password,
-      }
-
-      const { data, error } = await this.$supabase.auth.signInWithPassword(params)
-
-      if (error) {
-        console.log(error)
-        this.showToast({
-          severity: 'error',
-          summary: 'Errore Login',
-          detail: 'email o Password non validi',
-          life: 4000,
-        })
-        this.setUserStatus(false)
-      }
-
-      localStorage.setItem('token', data.session.access_token)
-      localStorage.setItem(
-        'user',
-        JSON.stringify({
-          email: data.user.email,
-          id: data.user.id,
-        }),
-      )
-      this.showToast({
-        severity: 'success',
-        summary: 'Login effettuato',
-        detail: 'Benvenuto in Cardinal',
-        life: 4000,
-      })
-      this.setUserStatus(true)
-      this.$router.push('/home')
-
-      this.setIsLoading(false)
-    },
-    async logout() {},
   },
 }
 </script>

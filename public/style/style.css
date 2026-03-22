@@ -311,3 +311,40 @@ body {
 .pi-sign-out {
   font-size: 1.1rem;
 }
+
+/* --- STILE GLOBALE TOAST CARDINAL --- */
+.p-toast .p-toast-message {
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5) !important;
+  color: #ffffff !important;
+}
+
+/* Success (Verde) */
+.p-toast .p-toast-message-success {
+  background: rgba(20, 140, 20, 0.7) !important;
+}
+
+/* Error (Rosso) */
+.p-toast .p-toast-message-error {
+  background: rgba(180, 20, 20, 0.7) !important;
+}
+
+/* Warn (Arancione/Giallo) */
+.p-toast .p-toast-message-warn {
+  background: rgba(255, 153, 0, 0.7) !important;
+}
+
+/* Info (Blu) */
+.p-toast .p-toast-message-info {
+  background: rgba(0, 102, 204, 0.7) !important;
+}
+
+/* Fix per icone e testi bianchi su tutti */
+.p-toast .p-toast-message .p-toast-message-content .p-toast-summary,
+.p-toast .p-toast-message .p-toast-message-content .p-toast-detail,
+.p-toast .p-toast-message-icon,
+.p-toast .p-toast-icon-close {
+  color: #ffffff !important;
+}

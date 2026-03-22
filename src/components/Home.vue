@@ -125,7 +125,7 @@ export default {
     SelectButton,
     MangaCard,
   },
-  inject: ['getUserStatus'],
+  inject: ['getUserStatus', 'doLogout'],
   data() {
     return {
       expanded: false,
@@ -184,14 +184,6 @@ export default {
         this.searchResults = []
       }
     },
-  },
-  beforeMount() {
-    if (!this.getUserStatus() || !localStorage.getItem('user')) {
-      this.$router.push('/')
-    }
-    const user = JSON.parse(localStorage.getItem('user'))
-    this.username = user.username
-    this.userId = user.user_id
   },
   mounted() {
     // Facciamo partire l'animazione dopo un micro-ritardo dall'atterraggio
