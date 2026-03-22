@@ -10,7 +10,7 @@
       </template>
       <template #content>
         <FloatLabel variant="on" class="w-100 mb-4">
-          <InputText id="email" v-model="email" class="w-100" />
+          <InputText id="email" type="email" v-model.trim="email" class="w-100" />
           <label for="email">email</label>
         </FloatLabel>
 

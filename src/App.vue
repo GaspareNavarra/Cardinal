@@ -48,8 +48,8 @@ export default {
     async doLogin(email, password) {
       this.setIsLoading(true)
       const params = {
-        email: email,
-        password: password,
+        email: email.trim(),
+        password: password.trim(),
       }
 
       const { data, error } = await this.$supabase.auth.signInWithPassword(params)
@@ -59,7 +59,10 @@ export default {
         this.showToast({
           severity: 'error',
           summary: 'Errore Login',
-          detail: 'email o Password non validi',
+          detail:
+            error.message === 'validation_failed'
+              ? 'Email o password non valide. Controlla che non ci siano spazi!'
+              : error.message,
           life: 4000,
         })
         this.showToast({
