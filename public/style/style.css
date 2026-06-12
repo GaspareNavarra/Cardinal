@@ -297,7 +297,7 @@ body {
 .logount-container:hover {
   background: rgba(255, 204, 0, 0.05);
   border-color: rgba(255, 204, 0, 0.3);
-  color: #ffcc00 !important;
+  color: hsl(48, 100%, 50%) !important;
   transform: translateY(-3px);
 }
 
