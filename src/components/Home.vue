@@ -15,7 +15,7 @@
 
       <template #content>
         <div v-if="expanded" class="fade-in-content container-fluid">
-          <div class="search-section my-4">
+          <div class="search-section my-2">
             <IconField class="w-100">
               <InputIcon :class="isSearching ? 'pi pi-spin pi-spinner' : 'pi pi-search-plus'" />
               <InputText
@@ -252,6 +252,13 @@ export default {
 }
 </script>
 <style scoped>
+/* Il padding verticale globale (public/style/style.css) è alto; qui lo riduciamo
+   così la barra di ricerca è più bassa e occupa meno spazio in verticale. */
+.search-input {
+  padding-top: 0.55rem !important;
+  padding-bottom: 0.55rem !important;
+}
+
 .dashboard-container {
   min-height: 100vh;
   background: transparent; /* O il tuo sfondo Matrix/Scuro */
