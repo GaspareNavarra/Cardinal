@@ -61,7 +61,7 @@
             </Popover>
           </div>
 
-          <div class="row mb-4 gap-3 justify-content-between">
+          <div class="row mb-4 gap-3 justify-content-between stats-row">
             <div class="col stats-card">
               <span class="label">Volumi Totali</span>
               <div class="value">{{ totalVolumes }}</div>
@@ -387,5 +387,31 @@ export default {
 :deep(.p-popover::before),
 :deep(.p-popover::after) {
   display: none !important;
+}
+
+/* Da telefono le 3 card statistiche devono stare su una riga sola: il
+   min-width: 150px globale (public/style/style.css) le farebbe andare a capo
+   su schermi stretti, quindi lo togliamo e restringiamo padding/font qui. */
+@media (max-width: 576px) {
+  .stats-row {
+    gap: 0.5rem !important;
+  }
+
+  .stats-card {
+    min-width: 0;
+    padding: 8px 6px;
+    text-align: center;
+  }
+
+  .stats-card .label {
+    font-size: 0.65rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stats-card .value {
+    font-size: 1.1rem;
+  }
 }
 </style>
