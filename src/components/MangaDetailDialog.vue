@@ -190,9 +190,11 @@ export default {
 
 .detail-cover {
   width: 140px;
+  max-height: 210px;
   border-radius: 8px;
-  object-fit: cover;
-  aspect-ratio: 2/3;
+  /* contain invece di cover: mostra la foto intera senza tagliarla, anche se
+     le proporzioni reali della copertina non sono esattamente 2:3 */
+  object-fit: contain;
 }
 
 .detail-info {
