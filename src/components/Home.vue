@@ -100,7 +100,11 @@
                   :key="item.anilist_id + '-' + index"
                   class="col-6 col-sm-4 col-md-3 col-xl-2"
                 >
-                  <MangaCard :manga="item" @add="saveToDatabase(item)" />
+                  <MangaCard
+                    :manga="item"
+                    @add="saveToDatabase(item)"
+                    @view-details="openDetails(item)"
+                  />
                 </div>
               </div>
             </div>
@@ -114,6 +118,8 @@
       :manga="pendingManga"
       @saved="loadStats"
     />
+
+    <MangaDetailDialog v-model:visible="detailVisible" :manga="detailManga" @add="addFromDetails" />
   </div>
 </template>
 <script>
@@ -127,6 +133,7 @@ import SelectButton from 'primevue/selectbutton'
 import ProgressSpinner from 'primevue/progressspinner'
 import MangaCard from '@/components/MangaCard.vue'
 import AddVolumesDialog from '@/components/AddVolumesDialog.vue'
+import MangaDetailDialog from '@/components/MangaDetailDialog.vue'
 import { debounce, searchManga } from '@/DataRetriever'
 export default {
   components: {
@@ -140,6 +147,7 @@ export default {
     ProgressSpinner,
     MangaCard,
     AddVolumesDialog,
+    MangaDetailDialog,
   },
   inject: ['getUserStatus', 'doLogout', 'showToast'],
   data() {
@@ -155,6 +163,8 @@ export default {
       arriving: 0,
       addVolumesVisible: false,
       pendingManga: null,
+      detailVisible: false,
+      detailManga: null,
       filters: {
         type: null,
         // Off (default): solo contenuti SFW. On: nessun filtro, come "Tutti" prima.
@@ -187,6 +197,14 @@ export default {
     saveToDatabase(item) {
       this.pendingManga = item
       this.addVolumesVisible = true
+    },
+    openDetails(item) {
+      this.detailManga = item
+      this.detailVisible = true
+    },
+    addFromDetails(item) {
+      this.detailVisible = false
+      this.saveToDatabase(item)
     },
     async loadStats() {
       try {
