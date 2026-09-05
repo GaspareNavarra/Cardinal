@@ -164,6 +164,7 @@ import ProgressSpinner from 'primevue/progressspinner'
 import Toast from 'primevue/toast'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
+import { registerSW } from 'virtual:pwa-register'
 
 export default {
   components: { ProgressSpinner, Toast, Dialog, Button },
@@ -277,22 +278,11 @@ export default {
         this.setIsLoading(false)
       }
     },
-    // Forza il Service Worker a saltare l'attesa e ad attivare la nuova build
+    // Dice al Service Worker in attesa di attivarsi subito; updateSW(true) gestisce
+    // da solo sia lo skipWaiting che il reload una volta preso il controllo.
     refreshApp() {
       this.updateExists = false
-
-      // Se c'è un service worker attivo, gli diciamo di aggiornarsi ed eseguire il reload
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistration().then((reg) => {
-          if (reg && reg.waiting) {
-            // Mandiamo il segnale di skip waiting
-            reg.waiting.postMessage({ type: 'SKIP_WAITING' })
-          } else {
-            // Failsafe: se non trova nulla in attesa, pulisce la cache dura e ricarica
-            window.location.reload()
-          }
-        })
-      }
+      if (this.updateSW) this.updateSW(true)
     },
   },
   async beforeMount() {
@@ -314,32 +304,26 @@ export default {
   mounted() {
     this.isLoading = false
 
-    // --- NUOVA LOGICA PWA REATTIVA E PULITA ---
-    if ('serviceWorker' in navigator) {
-      // Controlliamo se c'è già un worker in attesa all'avvio
-      navigator.serviceWorker.getRegistration().then((reg) => {
-        if (reg && reg.waiting) {
-          this.updateExists = true
-        }
-      })
-
-      // Ascoltiamo quando un nuovo service worker viene installato ed è pronto
-      navigator.serviceWorker.addEventListener('message', (event) => {
-        if (event.data && event.data.type === 'MSG_UPDATE_FOUND') {
-          this.updateExists = true
-        }
-      })
-
-      // Questo è l'interruttore magico: quando il worker si aggiorna (grazie a skipWaiting e clientsClaim),
-      // il browser rileva il cambio di controllo e fa l'F5 caricando DAVVERO la nuova versione.
-      let refreshing = false
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!refreshing) {
-          refreshing = true
-          window.location.reload()
-        }
-      })
-    }
+    // Registrazione PWA ufficiale (vite-plugin-pwa): a differenza del vecchio
+    // script auto-iniettato, questa continua a ricontrollare aggiornamenti nel
+    // tempo (non solo una volta al mount) e gestisce da sola skipWaiting/reload
+    // quando l'utente conferma dal dialog "Aggiornamento Richiesto".
+    this.updateSW = registerSW({
+      onNeedRefresh: () => {
+        this.updateExists = true
+      },
+      onRegisteredSW: (swUrl, registration) => {
+        if (!registration) return
+        // Ricontrolla se c'è un nuovo sw.js ogni 20 minuti: senza questo, dopo il
+        // primo mount un utente rimaneva bloccato all'infinito sulla build vecchia.
+        setInterval(
+          () => {
+            registration.update()
+          },
+          20 * 60 * 1000,
+        )
+      },
+    })
   },
 }
 </script>

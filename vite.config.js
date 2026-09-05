@@ -12,7 +12,12 @@ export default defineConfig({
     vueDevTools(),
     VitePWA({
       registerType: 'promptForUpdate',
-      injectRegister: 'inline',
+      // Registrazione manuale via virtual:pwa-register (vedi App.vue): lo script
+      // auto-iniettato da 'inline' si limitava a un register() una tantum, senza
+      // ricontrollare mai aggiornamenti — dopo il primo mount un utente restava
+      // bloccato all'infinito sulla build vecchia (fino a rompersi sui deploy
+      // successivi, quando i file con hash vecchio sparivano dal dominio prod).
+      injectRegister: false,
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
         name: 'Cardinal',

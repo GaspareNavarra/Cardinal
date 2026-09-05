@@ -61,7 +61,7 @@
             </Popover>
           </div>
 
-          <div class="row mb-4 gap-3 justify-content-between stats-row">
+          <div class="row mt-3 mb-4 gap-3 justify-content-between stats-row">
             <div class="col stats-card">
               <span class="label">Volumi Totali</span>
               <div class="value">{{ totalVolumes }}</div>
