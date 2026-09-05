@@ -27,14 +27,19 @@ export default defineConfig({
         background_color: '#141414',
         display: 'standalone',
         orientation: 'portrait',
+        // Le icone "cardinal-icon-*.png" originali hanno un margine trasparente
+        // (il "safe zone" richiesto dalle icone maskable, che l'OS ritaglia a
+        // piacere). Usarle anche per purpose "any" mostrava quel margine come
+        // bordo bianco perché lì nessuno lo ritaglia: per "any" servono invece
+        // le versioni "-fullbleed" (stesso logo, ritagliato a riempire tutto).
         icons: [
           {
-            src: 'icons/android/cardinal-icon-512x512.png',
+            src: 'icons/android/cardinal-icon-512x512-fullbleed.png',
             sizes: '512x512',
             type: 'image/png',
           },
           {
-            src: 'icons/android/cardinal-icon-192x192.png',
+            src: 'icons/android/cardinal-icon-192x192-fullbleed.png',
             sizes: '192x192',
             type: 'image/png',
           },
@@ -42,7 +47,7 @@ export default defineConfig({
             src: 'icons/android/cardinal-icon-512x512.png',
             sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable',
+            purpose: 'maskable',
           },
         ],
       },

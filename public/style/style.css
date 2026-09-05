@@ -67,6 +67,21 @@ body {
   border-color: rgba(255, 204, 0, 0.6) !important;
 }
 
+/* InputNumber (usato per i numeri di volume e l'intervallo "da/a") delega il
+   campo vero e proprio a un InputText interno, ma applica anche una propria
+   classe .p-inputnumber-input: la ripeto qui esplicitamente così lo stile
+   scuro non dipende dal fatto che .p-inputtext resti presente o meno. */
+.p-inputnumber-input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+.p-inputtext::placeholder,
+.p-inputnumber-input::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
 .p-button.p-button-contrast {
   background: #ffcc00 !important;
   border-color: #ffcc00 !important;
@@ -177,6 +192,37 @@ body {
   border-radius: 20px;
 }
 
+/* Il tema PrimeVue di default è chiaro (darkModeSelector configurato in
+   main.js non viene mai attivato su nessun elemento), quindi ogni Dialog
+   risultava con sfondo/testo chiari a contrasto con il resto dell'app scura.
+   Regola unica e globale (non per-componente) così vale per ogni dialog
+   presente e futuro, senza dover ripetere questo fix ogni volta. */
+.p-dialog {
+  background: rgba(20, 20, 20, 0.95) !important;
+  border: 1px solid rgba(255, 204, 0, 0.3) !important;
+  color: #fff !important;
+}
+
+.p-dialog-header,
+.p-dialog-content,
+.p-dialog-footer {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+.p-dialog-title {
+  color: #fff !important;
+}
+
+/* Bootstrap forza .text-muted a un grigio scuro (#6c757d) pensato per sfondi
+   chiari, con !important sull'elemento stesso: il colore chiaro impostato sul
+   contenitore del dialog non basta a batterlo. Qui in tutta l'app lo sfondo è
+   scuro, quindi serve un grigio chiaro invece — stessa tonalità già usata per
+   testi secondari altrove (.stats-card .label, .detail-meta, ecc.). */
+.text-muted {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
 .results-container {
   width: 100%;
   min-height: 300px;
@@ -267,6 +313,47 @@ body {
   background: #e6b800 !important;
   transform: translateY(-2px);
   transition: all 0.2s;
+}
+
+/* Bottoni PrimeVue senza una regola di severity specifica sopra (default,
+   outlined, o text "semplice" come "+ Volume extra"/"Salta, inserisco a
+   mano"): senza dark mode PrimeVue attivo i loro colori di riposo restano
+   pensati per uno sfondo chiaro e finiscono bianchi o quasi. Regola unica e
+   globale: nessun bottone è mai bianco, al più diventa giallo in hover/attivo,
+   stesso comportamento in ogni pagina/dialog dell'app. */
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-contrast):not(.p-button-danger):not(.p-button-warning) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+}
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-contrast):not(.p-button-danger):not(.p-button-warning):not(:disabled):hover {
+  background: rgba(255, 204, 0, 0.15) !important;
+  border-color: #ffcc00 !important;
+  color: #ffcc00 !important;
+}
+
+.p-button-outlined:not(.p-button-danger) {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: #fff !important;
+}
+.p-button-outlined:not(.p-button-danger):not(:disabled):hover {
+  background: rgba(255, 204, 0, 0.1) !important;
+  border-color: #ffcc00 !important;
+  color: #ffcc00 !important;
+}
+
+.p-button-text:not(.p-button-secondary):not(.p-button-danger) {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+.p-button-text:not(.p-button-secondary):not(.p-button-danger):not(:disabled):hover {
+  background: rgba(255, 204, 0, 0.12) !important;
+  color: #ffcc00 !important;
+}
+
+.p-button:disabled {
+  opacity: 0.45 !important;
 }
 
 .hello-message {
