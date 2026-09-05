@@ -32,7 +32,7 @@
           severity="contrast"
           class="w-100 mt-2"
           :disabled="!enableLoginButton()"
-          @click="doLogin()"
+          @click="doLogin(email, password)"
           >Login</Button
         >
       </template>

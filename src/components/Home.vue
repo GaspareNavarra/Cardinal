@@ -42,10 +42,10 @@
                   />
                 </div>
                 <div class="field">
-                  <label class="d-block mb-1">Target</label>
+                  <label class="d-block mb-1">Contenuti</label>
                   <SelectButton
-                    v-model="filters.rating"
-                    :options="ratingOptions"
+                    v-model="filters.includeAdult"
+                    :options="adultOptions"
                     optionLabel="label"
                     optionValue="value"
                   />
@@ -59,7 +59,6 @@
                 />
               </div>
             </Popover>
-            <small class="text-muted mt-2 d-block">Scrivi il titolo da cercare</small>
           </div>
 
           <div class="row mb-4 gap-3 justify-content-between">
@@ -68,7 +67,7 @@
               <div class="value">{{ totalVolumes }}</div>
             </div>
             <div class="col stats-card">
-              <span class="label">In Lettura</span>
+              <span class="label">Letti</span>
               <div class="value">{{ reading }}</div>
             </div>
             <div class="col stats-card highlight">
@@ -80,10 +79,17 @@
           <div
             :class="[
               'results-container',
-              { 'is-empty': !searchResults.length, 'has-results': searchResults.length },
+              {
+                'is-empty': isSearching || !searchResults.length,
+                'has-results': searchResults.length,
+              },
             ]"
           >
-            <div v-if="!searchResults.length" class="empty-state">
+            <div v-if="isSearching" class="empty-state">
+              <ProgressSpinner style="width: 50px; height: 50px" />
+            </div>
+
+            <div v-else-if="!searchResults.length" class="empty-state">
               <p class="text-muted">La tua collezione apparirà qui...</p>
             </div>
 
@@ -91,7 +97,7 @@
               <div class="row g-4">
                 <div
                   v-for="(item, index) in searchResults"
-                  :key="item.mal_id + '-' + index"
+                  :key="item.anilist_id + '-' + index"
                   class="col-6 col-sm-4 col-md-3 col-xl-2"
                 >
                   <MangaCard :manga="item" @add="saveToDatabase(item)" />
@@ -102,6 +108,12 @@
         </div>
       </template>
     </Card>
+
+    <AddVolumesDialog
+      v-model:visible="addVolumesVisible"
+      :manga="pendingManga"
+      @saved="loadStats"
+    />
   </div>
 </template>
 <script>
@@ -112,7 +124,9 @@ import InputIcon from 'primevue/inputicon'
 import Popover from 'primevue/popover'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
+import ProgressSpinner from 'primevue/progressspinner'
 import MangaCard from '@/components/MangaCard.vue'
+import AddVolumesDialog from '@/components/AddVolumesDialog.vue'
 import { debounce, searchManga } from '@/DataRetriever'
 export default {
   components: {
@@ -123,9 +137,11 @@ export default {
     Popover,
     Button,
     SelectButton,
+    ProgressSpinner,
     MangaCard,
+    AddVolumesDialog,
   },
-  inject: ['getUserStatus', 'doLogout'],
+  inject: ['getUserStatus', 'doLogout', 'showToast'],
   data() {
     return {
       expanded: false,
@@ -137,19 +153,22 @@ export default {
       totalVolumes: 0,
       reading: 0,
       arriving: 0,
+      addVolumesVisible: false,
+      pendingManga: null,
       filters: {
         type: null,
-        rating: null,
+        // Off (default): solo contenuti SFW. On: nessun filtro, come "Tutti" prima.
+        includeAdult: false,
       },
       typeOptions: [
         { label: 'Manga', value: 'manga' },
         { label: 'Manhwa', value: 'manhwa' },
         { label: 'Manhua', value: 'manhua' },
       ],
-      ratingOptions: [
-        { label: 'Tutti', value: null },
-        { label: 'SFW', value: 'sfw' },
-      ],
+      // Singola opzione: il bottone resta sempre etichettato "SFW" e diventa
+      // solo attivo/disattivo (stessa grafica del filtro Tipo sopra), non cambia
+      // mai testo. Attivo -> nessun filtro isAdult (tutti); disattivo -> solo SFW.
+      adultOptions: [{ label: 'SFW', value: true }],
     }
   },
   watch: {
@@ -165,15 +184,29 @@ export default {
     },
   },
   methods: {
-    saveToDatabase() {
-      debugger
+    saveToDatabase(item) {
+      this.pendingManga = item
+      this.addVolumesVisible = true
+    },
+    async loadStats() {
+      try {
+        const { data, error } = await this.$supabase.from('volumes').select('status')
+        if (error) throw error
+        this.totalVolumes = data.length
+        this.reading = data.filter((v) => v.status === 'letto').length
+        this.arriving = data.filter((v) => v.status === 'in_arrivo').length
+      } catch (error) {
+        // Tabelle non ancora create sul progetto Supabase, o utente non loggato:
+        // le statistiche restano a 0 senza bloccare il resto della pagina.
+        console.log(error)
+      }
     },
     toggleFilters(event) {
       this.$refs.filterOp.toggle(event)
     },
     resetFilters() {
       this.filters.type = null
-      this.filters.rating = null
+      this.filters.includeAdult = false
     },
     triggerSearch() {
       const query = this.newMangaSearch
@@ -190,16 +223,27 @@ export default {
     setTimeout(() => {
       this.expanded = true
     }, 100)
+    this.loadStats()
   },
   created() {
     this.debouncedSearch = debounce(async (query, params) => {
       this.isSearching = true
+      this.searchResults = []
       try {
         // searchManga dovrà ora accettare un secondo parametro per i filtri
         const results = await searchManga(query, params)
         if (this.newMangaSearch.length >= 4) {
           this.searchResults = results
         }
+      } catch (error) {
+        console.log(error)
+        this.searchResults = []
+        this.showToast({
+          severity: 'error',
+          summary: 'Errore Ricerca',
+          detail: 'Il servizio di ricerca manga non è al momento raggiungibile',
+          life: 4000,
+        })
       } finally {
         this.isSearching = false
       }
