@@ -21,6 +21,29 @@ const STATUS_LABELS = {
   HIATUS: 'In pausa',
 }
 
+const SOURCE_LABELS = {
+  ORIGINAL: 'Opera originale',
+  MANGA: 'Tratto da manga',
+  LIGHT_NOVEL: 'Tratto da light novel',
+  VISUAL_NOVEL: 'Tratto da visual novel',
+  VIDEO_GAME: 'Tratto da videogioco',
+  WEB_NOVEL: 'Tratto da web novel',
+  DOUJINSHI: 'Doujinshi',
+  ANIME: 'Tratto da anime',
+  COMIC: 'Tratto da fumetto',
+  LIVE_ACTION: 'Tratto da live action',
+  GAME: 'Tratto da videogioco',
+  MULTIMEDIA_PROJECT: 'Progetto multimediale',
+  PICTURE_BOOK: 'Tratto da libro illustrato',
+}
+
+const COUNTRY_LABELS = {
+  JP: 'Giappone',
+  KR: 'Corea del Sud',
+  CN: 'Cina',
+  TW: 'Taiwan',
+}
+
 async function postAniList(query, variables) {
   const response = await fetch(ANILIST_URL, {
     method: 'POST',
@@ -142,7 +165,7 @@ const DETAIL_QUERY = `
       endDate {
         year
       }
-      staff(perPage: 3) {
+      staff(perPage: 5) {
         edges {
           role
           node {
@@ -152,6 +175,11 @@ const DETAIL_QUERY = `
           }
         }
       }
+      popularity
+      favourites
+      source
+      countryOfOrigin
+      siteUrl
       coverImage {
         large
       }
@@ -167,7 +195,12 @@ export async function getMangaDetails(anilistId) {
   const media = data?.Media
   if (!media) return null
 
-  const author = media.staff?.edges?.[0]?.node?.name?.full ?? null
+  // Fino a 2 nomi distinti (es. autore del soggetto + disegnatore, spesso
+  // persone diverse nei manga): evitiamo di indovinare quale ruolo esatto
+  // prendere, i primi/principali staff sono già in ordine di rilevanza.
+  const authorNames = [
+    ...new Set((media.staff?.edges || []).map((e) => e.node?.name?.full).filter(Boolean)),
+  ].slice(0, 2)
 
   return {
     anilist_id: media.id,
@@ -181,7 +214,12 @@ export async function getMangaDetails(anilistId) {
     chapters: media.chapters,
     startYear: media.startDate?.year ?? null,
     endYear: media.endDate?.year ?? null,
-    author,
+    author: authorNames.join(', ') || null,
+    popularity: media.popularity ?? null,
+    favourites: media.favourites ?? null,
+    source: SOURCE_LABELS[media.source] || media.source || null,
+    countryOfOrigin: COUNTRY_LABELS[media.countryOfOrigin] || media.countryOfOrigin || null,
+    siteUrl: media.siteUrl ?? null,
     images: {
       jpg: {
         image_url: media.coverImage?.large,
