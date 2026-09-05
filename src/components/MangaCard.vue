@@ -3,12 +3,21 @@
     <div class="image-container">
       <img :src="manga.images.jpg.image_url" :alt="manga.title" class="manga-cover" />
 
+      <!-- Visibile anche senza hover (utile su mobile, dove l'overlay si vede
+           solo al tocco): a colpo d'occhio si capisce che è già in collezione. -->
+      <span v-if="inCollection" class="in-collection-badge" v-tooltip.top="'Già in collezione'">
+        <i class="pi pi-check"></i>
+      </span>
+
       <div class="hover-overlay">
         <Button
-          icon="pi pi-plus"
-          class="p-button-rounded p-button-warning"
+          :icon="inCollection ? 'pi pi-check' : 'pi pi-plus'"
+          :class="[
+            'p-button-rounded',
+            inCollection ? 'p-button-secondary' : 'p-button-warning',
+          ]"
           @click.stop="$emit('add', manga)"
-          v-tooltip.top="'Aggiungi alla collezione'"
+          v-tooltip.top="inCollection ? 'Aggiungi altri volumi' : 'Aggiungi alla collezione'"
         />
       </div>
     </div>
@@ -38,6 +47,10 @@ export default {
       type: Object,
       required: true,
     },
+    inCollection: {
+      type: Boolean,
+      default: false,
+    },
   },
 }
 </script>
@@ -66,6 +79,23 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.in-collection-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(255, 204, 0, 0.5);
+  color: #ffcc00;
+  font-size: 0.7rem;
+  z-index: 2;
 }
 
 .hover-overlay {

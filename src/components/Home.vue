@@ -80,8 +80,8 @@
             :class="[
               'results-container',
               {
-                'is-empty': isSearching || !searchResults.length,
-                'has-results': searchResults.length,
+                'is-empty': !hasGridContent,
+                'has-results': hasGridContent,
               },
             ]"
           >
@@ -89,11 +89,7 @@
               <ProgressSpinner style="width: 50px; height: 50px" />
             </div>
 
-            <div v-else-if="!searchResults.length" class="empty-state">
-              <p class="text-muted">La tua collezione apparirà qui...</p>
-            </div>
-
-            <div v-else class="manga-gallery fade-in-content">
+            <div v-else-if="searchResults.length" class="manga-gallery fade-in-content">
               <div class="row g-4">
                 <div
                   v-for="(item, index) in searchResults"
@@ -102,11 +98,44 @@
                 >
                   <MangaCard
                     :manga="item"
+                    :in-collection="isInCollection(item)"
                     @add="saveToDatabase(item)"
                     @view-details="openDetails(item)"
                   />
                 </div>
               </div>
+            </div>
+
+            <!-- Ricerca in corso ma senza (ancora) risultati: niente collezione qui,
+                 se no sembrerebbe che la ricerca non abbia trovato nulla. -->
+            <div v-else-if="newMangaSearch" class="empty-state">
+              <p class="text-muted">Nessun risultato per "{{ newMangaSearch }}".</p>
+            </div>
+
+            <div v-else-if="loadingCollection" class="empty-state">
+              <ProgressSpinner style="width: 50px; height: 50px" />
+            </div>
+
+            <div v-else-if="collection.length" class="manga-gallery fade-in-content">
+              <div class="row g-4">
+                <div
+                  v-for="entry in collection"
+                  :key="entry.id"
+                  class="col-6 col-sm-4 col-md-3 col-xl-2"
+                >
+                  <CollectionCard
+                    :entry="entry"
+                    @view-details="openCollectionDetails(entry)"
+                    @edit="openEditVolumes(entry)"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div v-else class="empty-state">
+              <p class="text-muted">
+                Non hai ancora nessun manga in collezione: cercalo qui sopra e aggiungilo con il "+".
+              </p>
             </div>
           </div>
         </div>
@@ -116,10 +145,16 @@
     <AddVolumesDialog
       v-model:visible="addVolumesVisible"
       :manga="pendingManga"
-      @saved="loadStats"
+      :edit-entry="editEntry"
+      @saved="onVolumesSaved"
     />
 
-    <MangaDetailDialog v-model:visible="detailVisible" :manga="detailManga" @add="addFromDetails" />
+    <MangaDetailDialog
+      v-model:visible="detailVisible"
+      :manga="detailManga"
+      :in-collection="detailMangaInCollection"
+      @add="addFromDetails"
+    />
   </div>
 </template>
 <script>
@@ -132,6 +167,7 @@ import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import ProgressSpinner from 'primevue/progressspinner'
 import MangaCard from '@/components/MangaCard.vue'
+import CollectionCard from '@/components/CollectionCard.vue'
 import AddVolumesDialog from '@/components/AddVolumesDialog.vue'
 import MangaDetailDialog from '@/components/MangaDetailDialog.vue'
 import { debounce, searchManga } from '@/DataRetriever'
@@ -146,6 +182,7 @@ export default {
     SelectButton,
     ProgressSpinner,
     MangaCard,
+    CollectionCard,
     AddVolumesDialog,
     MangaDetailDialog,
   },
@@ -163,8 +200,14 @@ export default {
       arriving: 0,
       addVolumesVisible: false,
       pendingManga: null,
+      // Presente solo quando si modifica una serie già in collezione (vedi
+      // openEditVolumes): passato ad AddVolumesDialog per farla partire dai
+      // volumi già salvati invece che da una ricerca AnimeClick da zero.
+      editEntry: null,
       detailVisible: false,
       detailManga: null,
+      collection: [],
+      loadingCollection: false,
       filters: {
         type: null,
         // Off (default): solo contenuti SFW. On: nessun filtro, come "Tutti" prima.
@@ -181,6 +224,25 @@ export default {
       adultOptions: [{ label: 'SFW', value: true }],
     }
   },
+  computed: {
+    // Decide se il risultato-container mostra la griglia "piena" (ricerca o
+    // collezione) oppure lo stato vuoto centrato: senza questo, passare dalla
+    // ricerca alla collezione (o viceversa) faceva "saltare" lo stile del box.
+    hasGridContent() {
+      if (this.isSearching) return false
+      if (this.searchResults.length) return true
+      if (this.newMangaSearch) return false
+      return this.collection.length > 0
+    },
+    // Set per un lookup O(1) invece di scorrere l'array ad ogni card
+    // renderizzata nei risultati di ricerca.
+    collectionAnilistIds() {
+      return new Set(this.collection.map((entry) => entry.series.anilist_id))
+    },
+    detailMangaInCollection() {
+      return this.detailManga ? this.isInCollection(this.detailManga) : false
+    },
+  },
   watch: {
     // Osserviamo sia la stringa che i filtri
     newMangaSearch() {
@@ -194,8 +256,35 @@ export default {
     },
   },
   methods: {
+    isInCollection(item) {
+      return this.collectionAnilistIds.has(item.anilist_id)
+    },
     saveToDatabase(item) {
+      // Avvisa se il manga è già in collezione (stesso anilist_id), ma non
+      // blocca: la dialog resta comunque utile per aggiungere altri volumi
+      // usciti dopo (es. il 14 di una serie di cui hai già l'1-13).
+      if (this.isInCollection(item)) {
+        this.showToast({
+          severity: 'info',
+          summary: 'Già in collezione',
+          detail: `"${item.title}" è già nella tua collezione: qui puoi aggiungere altri volumi.`,
+          life: 4000,
+        })
+      }
+      this.editEntry = null
       this.pendingManga = item
+      this.addVolumesVisible = true
+    },
+    openEditVolumes(entry) {
+      this.pendingManga = {
+        anilist_id: entry.series.anilist_id,
+        title: entry.series.title,
+        images: { jpg: { image_url: entry.series.image_url } },
+        jpVolumes: entry.series.jp_volumes,
+        italianPublisher: entry.series.italian_publisher,
+        italianStatus: entry.series.italian_status,
+      }
+      this.editEntry = { userSeriesId: entry.id, volumes: entry.volumes }
       this.addVolumesVisible = true
     },
     openDetails(item) {
@@ -205,6 +294,55 @@ export default {
     addFromDetails(item) {
       this.detailVisible = false
       this.saveToDatabase(item)
+    },
+    openCollectionDetails(entry) {
+      // MangaDetailDialog si aspetta la stessa forma normalizzata usata dalla
+      // ricerca AniList: qui basta anilist_id (per ricaricare i dettagli) e
+      // title/immagine per mostrare subito qualcosa mentre carica.
+      this.detailManga = {
+        anilist_id: entry.series.anilist_id,
+        title: entry.series.title,
+        images: { jpg: { image_url: entry.series.image_url } },
+      }
+      this.detailVisible = true
+    },
+    async loadCollection() {
+      this.loadingCollection = true
+      try {
+        const { data, error } = await this.$supabase
+          .from('user_series')
+          .select(
+            'id, series:series_id(anilist_id, title, image_url, jp_volumes, italian_status, italian_publisher), volumes(id, volume_number, special_label, copy_label, status)',
+          )
+          .order('created_at', { ascending: false })
+        if (error) throw error
+        this.collection = (data || [])
+          .filter((entry) => entry.series)
+          .map((entry) => {
+            const volumes = entry.volumes || []
+            return {
+              id: entry.id,
+              series: entry.series,
+              // Righe grezze: servono ad AddVolumesDialog per aprirsi in
+              // modifica pre-popolata invece di ripartire da zero.
+              volumes,
+              ownedCount: volumes.filter((v) => v.status === 'posseduto').length,
+              arrivingCount: volumes.filter((v) => v.status === 'in_arrivo').length,
+              readCount: volumes.filter((v) => v.status === 'letto').length,
+            }
+          })
+      } catch (error) {
+        // Tabelle non ancora create sul progetto Supabase, o utente non loggato:
+        // la collezione resta vuota senza bloccare il resto della pagina.
+        console.log(error)
+        this.collection = []
+      } finally {
+        this.loadingCollection = false
+      }
+    },
+    onVolumesSaved() {
+      this.loadStats()
+      this.loadCollection()
     },
     async loadStats() {
       try {
@@ -242,6 +380,7 @@ export default {
       this.expanded = true
     }, 100)
     this.loadStats()
+    this.loadCollection()
   },
   created() {
     this.debouncedSearch = debounce(async (query, params) => {

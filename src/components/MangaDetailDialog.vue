@@ -76,8 +76,14 @@
 
     <template #footer>
       <Button label="Chiudi" severity="secondary" text @click="close" />
+      <!-- Se è già in collezione non ha senso proporre "aggiungi": per
+           volumi nuovi usciti dopo si usa il "+" sulla card nei risultati,
+           non serve duplicarlo anche qui. -->
+      <span v-if="manga && inCollection" class="already-in-collection-tag">
+        <i class="pi pi-check"></i> Già in collezione
+      </span>
       <Button
-        v-if="manga"
+        v-else-if="manga"
         label="Aggiungi alla collezione"
         icon="pi pi-plus"
         @click="$emit('add', manga)"
@@ -98,6 +104,7 @@ export default {
   props: {
     visible: { type: Boolean, default: false },
     manga: { type: Object, default: null },
+    inCollection: { type: Boolean, default: false },
   },
   emits: ['update:visible', 'add'],
   data() {
@@ -105,6 +112,7 @@ export default {
       loading: false,
       details: null,
       publisherInfo: null,
+      italianVolumeCount: 0,
     }
   },
   computed: {
@@ -117,6 +125,7 @@ export default {
     volumesChaptersLabel() {
       if (!this.details) return null
       const parts = []
+      if (this.italianVolumeCount) parts.push(`${this.italianVolumeCount} volumi in Italia`)
       if (this.details.jpVolumes) parts.push(`${this.details.jpVolumes} volumi JP`)
       if (this.details.chapters) parts.push(`${this.details.chapters} capitoli`)
       return parts.join(' · ') || null
@@ -131,6 +140,7 @@ export default {
     async load() {
       this.details = null
       this.publisherInfo = null
+      this.italianVolumeCount = 0
       this.loading = true
       try {
         const [details, italian] = await Promise.all([
@@ -142,6 +152,7 @@ export default {
           italian.publisher || italian.italianStatus
             ? { publisher: italian.publisher, italianStatus: italian.italianStatus }
             : null
+        this.italianVolumeCount = italian.italianVolumes?.length || 0
       } catch (error) {
         console.log(error)
         this.details = null
@@ -157,37 +168,6 @@ export default {
 </script>
 
 <style scoped>
-/* Il tema PrimeVue di default è chiaro (darkModeSelector non è mai attivato),
-   quindi il Dialog risultava bianco contro il resto dell'app scura. Stesso
-   trattamento già usato per il Popover dei filtri in Home.vue: stesso colore
-   scuro/vetro della card principale, ma più opaco per restare leggibile
-   (la card usa rgba(...,0.05), qui serve più densità per il testo).
-
-   Dialog avvolge tutto in un Portal/mask interno: non è affidabile indovinare
-   se l'attributo di scope Vue finisca su .p-dialog o su un suo genitore, né se
-   PrimeVue applichi i suoi stili prima o dopo il nostro CSS statico. Usiamo
-   quindi :global() sulla classe che passiamo già esplicitamente al componente
-   (class="manga-detail-dialog"), coprendo entrambi i casi (che finisca sulla
-   stessa .p-dialog o su un genitore) più !important per battere gli stili
-   iniettati a runtime da PrimeVue a parità di specificità. */
-:global(.manga-detail-dialog.p-dialog),
-:global(.manga-detail-dialog .p-dialog) {
-  background: rgba(20, 20, 20, 0.95) !important;
-  border: 1px solid rgba(255, 204, 0, 0.3) !important;
-  color: #fff !important;
-}
-
-:global(.manga-detail-dialog .p-dialog-header),
-:global(.manga-detail-dialog .p-dialog-content),
-:global(.manga-detail-dialog .p-dialog-footer) {
-  background: transparent !important;
-  color: #fff !important;
-}
-
-:global(.manga-detail-dialog .p-dialog-title) {
-  color: #fff !important;
-}
-
 .detail-cover {
   width: 140px;
   max-height: 210px;
@@ -260,4 +240,13 @@ export default {
 .anilist-link:hover {
   text-decoration: underline;
 }
+
+.already-in-collection-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+}
+
 </style>
