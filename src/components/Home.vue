@@ -3,7 +3,7 @@
     <Card :class="['main-card shadow-xl', { 'is-expanded': expanded }]">
       <template #title>
         <div class="d-flex justify-content-between align-items-center header-content">
-          <img src="/img/cardinal_logo_with_text.png" style="height: 40px" alt="Logo" />
+          <img src="/img/cardinal_logo_with_text.png" class="header-logo" alt="Logo" />
           <div class="hello-message d-flex justify-content-end w-100">
             <div class="logount-container" @click="doLogout">
               <span class="logout-label">Logout</span>
@@ -252,6 +252,15 @@ export default {
 }
 </script>
 <style scoped>
+/* Logo ingrandito visivamente con transform (non cambia le dimensioni nel
+   flusso del layout, quindi logout/ricerca/statistiche sotto non si spostano):
+   l'altezza "vera" resta 40px, solo l'aspetto è più grande. */
+.header-logo {
+  height: 40px;
+  transform: scale(1.4);
+  transform-origin: left center;
+}
+
 /* Il padding verticale globale (public/style/style.css) è alto; qui lo riduciamo
    così la barra di ricerca è più bassa e occupa meno spazio in verticale. */
 .search-input {
