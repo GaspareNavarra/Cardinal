@@ -14,10 +14,6 @@ export default defineConfig({
       registerType: 'promptForUpdate',
       injectRegister: 'inline',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
-      workbox: {
-        skipWaiting: true,
-        clientsClaim: true,
-      },
       manifest: {
         name: 'Cardinal',
         short_name: 'Cardinal',
