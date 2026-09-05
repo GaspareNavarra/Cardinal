@@ -279,7 +279,7 @@ export default {
 /* Stato Espanso */
 .is-expanded {
   width: 95vw; /* Quasi tutta la larghezza */
-  height: 90vh; /* Quasi tutta l'altezza */
+  height: 92vh; /* Quasi tutta l'altezza */
 }
 
 /* Animazione per far apparire il contenuto dopo l'espansione */
