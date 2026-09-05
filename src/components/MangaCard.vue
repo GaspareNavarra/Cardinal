@@ -1,5 +1,5 @@
 <template>
-  <div class="manga-card-simple shadow-lg">
+  <div class="manga-card-simple shadow-lg" @click="$emit('view-details', manga)">
     <div class="image-container">
       <img :src="manga.images.jpg.image_url" :alt="manga.title" class="manga-cover" />
 
@@ -7,7 +7,7 @@
         <Button
           icon="pi pi-plus"
           class="p-button-rounded p-button-warning"
-          @click="$emit('add', manga)"
+          @click.stop="$emit('add', manga)"
           v-tooltip.top="'Aggiungi alla collezione'"
         />
       </div>
@@ -119,6 +119,7 @@ export default {
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   height: 100%;
+  cursor: pointer;
 }
 
 .image-container {
