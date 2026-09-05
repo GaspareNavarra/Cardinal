@@ -331,11 +331,15 @@ export default {
   padding: 10px;
 }
 
-/* Quando ci sono i risultati, assicuriamoci che la galleria 
+/* Quando ci sono i risultati, assicuriamoci che la galleria
    non forzi le card a rimpicciolirsi */
 .manga-gallery {
   height: auto;
   min-height: min-content;
+  /* .fade-in-content porta un suo margin-top:20px che si sommava a quello di
+     .results-container, spingendo la griglia più in basso solo quando ci sono
+     risultati (lo stato vuoto non ha questa classe): lo azzeriamo qui. */
+  margin-top: 0;
 }
 
 /* Stile per il placeholder vuoto - rimane Full Height e centrato */
